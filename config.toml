@@ -1,0 +1,9 @@
+[bot]
+token    = ""
+admin_id = 0
+
+[params]
+
+[image]
+sample = "info.html"
+select = "#container"

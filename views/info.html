@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="https://arebaka.github.io/css/reset.min.css" />
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<style type="text/css">
+		#container {
+			position: relative;
+			overflow: hidden;
+			padding: 0 1em 1em;
+			width: 512px;
+			color: #FCF4DC;
+			background-color: #002831;
+		}
+
+		#title {
+			padding: 0;
+			font: bold 24px/2 "Roboto Mono", monospace;
+			text-align: left;
+			color: #178EC8;
+			border-bottom: 1px solid #FCF4DC;
+		}
+		#title .at-sign {
+			padding: 0 .5em;
+			font-weight: normal;
+			color: #FCF4DC;
+		}
+
+		.infoblock {
+			position: relative;
+			overflow: hidden;
+			display: block;
+			padding: 1em 0;
+			font: 12px/2 "Roboto Mono", monospace;
+			border-bottom: 1px solid;
+		}
+		.infoblock th {
+			width: 64px;
+			height: 100%;
+			font-weight: bold;
+			text-align: left;
+		}
+		.infoblock td {
+			height: 100%;
+		}
+
+		#static td {
+			max-width: calc((512px - 2em) / 2 - 64px - 1em);
+		}
+		#static:after {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			display: "block";
+			width: calc((512px - 2em) / 2);
+			height: 100%;
+			background: bottom / contain no-repeat url(https://count.getloli.com/get/@arebaka:topbot?theme=moebooru);
+		}
+
+		#stats .size {
+			width: calc((512px - 2em) / 2 - 64px);
+		}
+		#stats .size .used {
+			border-bottom: 1px solid #178EC8;
+		}
+		#stats .bar-box {
+			width: calc((512px - 2em) / 2);
+			height: 24px;
+		}
+
+		.bar {
+			margin-top: 6px;
+			width: 100%;
+			height: 12px;
+			color: #178EC8;
+			border: 1px solid;
+		}
+		.bar .used {
+			float: left;
+			height: 100%;
+			color: #FCF4DC;
+			background-color: #178EC8;
+		}
+		.bar .buffered {
+			float: left;
+			height: 100%;
+			color: #FCF4DC;
+			background-color: #B27E28;
+		}
+
+		#cpu .common .label {
+			width: 64px;
+		}
+		#cpu .common td {
+			width: calc((512px - 2em - 64px) / 3);
+			text-align: right;
+		}
+		#cores {
+			margin-top: .5em;
+			width: 100%;
+		}
+		#cores .core {
+			overflow: hidden;
+		}
+		#cores .label {
+			float: left;
+			width: 2em;
+		}
+		#cores .bar-box {
+			margin-left: 2em;
+		}
+
+		#drives .drive {
+			margin-bottom: .5em;
+		}
+		#drives .drive:last-of-type {
+			margin-bottom: 0;
+		}
+		#drives table {
+			width: 100%;
+		}
+		#drives .type,
+		#drives .size {
+			width: calc((512px - 2em - 64px) / 2);
+		}
+		#drives .size {
+			text-align: right;
+		}
+		#drives .bar {
+			margin: 0;
+		}
+
+		#time {
+			margin-top: 1em;
+			float: right;
+			font: 12px Roboto, sans-serif;
+		}
+	</style>
+
+	<script type="text/javascript">
+		async function renderCores(cores)
+		{
+			if (cores.length < 2) return;
+
+			let nCols = cores.length > 12 ? 4 : cores.length > 8 ? 3 : 2;
+			$("#cores").css("column-count", nCols);
+
+			for (let i = 0; i < cores.length; i++) {
+				$("#cores").append(`<div class="core">
+					<p class="label">${i+1}</p>
+					<div class="bar-box">
+						<div class="bar"><div class="used" style="width: ${cores[i].load}%"></div></div>
+					</div>
+				</div>`);
+			}
+		}
+
+		async function renderDrives(drives)
+		{
+			for (let drive of drives) {
+				$("#drives").append(`<div class="drive">
+					<table><tbody><tr>
+						<th class="mount">${drive.mount}</th>
+						<td class="fs">${drive.type}</th>
+						<td class="size">${await formatSize(drive.used)} / ${await formatSize(drive.size)}</td>
+					</tr></tbody></table>
+					<div class="bar-box">
+						<div class="bar"><div class="used" style="width: ${drive.use}%"></div></div>
+					</div>
+				</tr>`);
+			}
+		}
+
+		async function renderGraphics(data)
+		{
+			for (let gpu of data.controllers) {
+				if (!gpu.name && !gpu.model) continue;
+
+				$("#gpus").append(`<tr>
+					<th>GPU</th>
+					<td>${gpu.name || gpu.model}</td>
+				</tr>`);
+			}
+
+			for (let display of data.displays) {
+				$("#displays").append(`<tr>
+					<th>Display</th>
+					<td>${display.resolutionX}x${display.resolutionY} @ ${display.currentRefreshRate}Hz</td>
+				</tr>`);
+			}
+		}
+
+		async function render(data)
+		{
+			$("#title .username").text(data.user.username);
+			$("#title .hostname").text(data.os.hostname);
+
+			$("#static .os .distro").text(data.os.distro);
+			$("#static .os .arch").text(data.os.arch);
+			$("#static .kernel").text(data.os.kernel);
+			$("#static .shell").text(data.user.shell);
+			$("#static .host .model").text(data.system.model);
+			$("#static .host .version").text(data.system.version);
+
+			$("#static .cpu .manufacturer").text(data.cpu.manufacturer);
+			$("#static .cpu .brand").text(data.cpu.brand);
+			$("#static .cpu .cores").text(data.cpu.cores);
+			$("#static .cpu .speed").text(data.cpu.speed);
+
+			$("#stats .uptime").text(await formatDur(data.time.uptime * 1000));
+			$("#stats .load-avg").text(data.loadavg.join(' '));
+			$("#stats .memory .size .used").text(await formatSize(data.mem.active));
+			$("#stats .memory .size .total").text(await formatSize(data.mem.total));
+			$("#stats .swap .size .used").text(await formatSize(data.mem.swapused));
+			$("#stats .swap .size .total").text(await formatSize(data.mem.swaptotal));
+
+			$("#stats .memory .bar .used").css("width", `${data.mem.active / data.mem.total * 100}%`);
+			$("#stats .memory .bar .buffered").css("width", `${data.mem.buffers / data.mem.total * 100}%`);
+			$("#stats .swap .bar .used").css("width", `${data.mem.swapused / data.mem.swaptotal * 100}%`);
+
+			$("#cpu .common .speed").text(data.cpu.speedMax || data.cpu.speed);
+			$("#cpu .common .load").text(data.currentLoad.currentLoad.toFixed(2));
+			$("#cpu .common .temp").text(data.temp.max || "~");
+			$("#cpu .used").css("width", `${data.currentLoad.currentLoad}%`);
+
+			await renderGraphics(data.graphics);
+			await renderCores(data.currentLoad.cpus);
+			await renderDrives(data.fsSize);
+
+			$("#time .time").text(new Date(data.time.current).toLocaleString());
+			$("#time .timezone").text(data.time.timezone);
+		}
+	</script>
+</head>
+
+<body>
+<main id="container">
+	<h1 id="title"><span class="username"></span><span class="at-sign">@</span><span class="hostname"></span></h1>
+	<table class="infoblock" id="static"><tbody>
+		<tr class="os">
+			<th>OS</th>
+			<td class="os"><span class="distro"></span> <span class="arch"></span></td>
+		</tr>
+		<tr>
+			<th>Kernel</th>
+			<td class="kernel"></td>
+		</tr>
+		<tr>
+			<th>Shell</th>
+			<td class="shell"></td>
+		</tr>
+		<tr>
+			<th>Host</th>
+			<td class="host"><span class="model"></span> <span class="version"></span></td>
+		</tr>
+		<tr>
+			<th>CPU</th>
+			<td class="cpu"><span class="manufacturer"></span> <span class="brand"></span> (<span class="cores"></span>) @ <span class="speed"></span> GHz</td>
+		</tr>
+	</tbody>
+	<tbody id="gpus"></tbody>
+	<tbody id="displays"></tbody>
+	</table>
+	<table class="infoblock" id="stats"><tbody>
+		<tr>
+			<th>Uptime</th>
+			<td class="uptime"></td>
+		</tr>
+		<tr>
+			<th>LAV</th>
+			<td class="load-avg"></td>
+		</tr>
+		<tr class="memory">
+			<th>Memory</th>
+			<td class="size">
+				<span class="used"></span> / <span class="total"></span>
+			</td>
+			<td class="bar-box">
+				<div class="bar">
+					<div class="used"></div>
+					<div class="buffered"></div>
+				</div>
+			</td>
+		</tr>
+		<tr class="swap">
+			<th>SWAP</th>
+			<td class="size">
+				<span class="used"></span> / <span class="total"></span>
+			</td>
+			<td class="bar-box">
+				<div class="bar"><div class="used"></div></div>
+			</td>
+		</tr>
+	</tbody></table>
+	<div class="infoblock" id="cpu">
+		<div class="common">
+			<table><tbody><tr>
+				<th class="label">CPU</th>
+				<td class="speed-box"><span class="speed"></span>GHz</td>
+				<td class="load-box"><span class="load"></span>%</td>
+				<td class="temp-box"><span class="temp"></span>°C</td>
+			</tr></tbody></table>
+			<div class="bar"><div class="used"></div></div>
+		</div>
+		<div id="cores"></div>
+	</div>
+	<div class="infoblock" id="drives"></div>
+	<p id="time"><span class="time"></span></p>
+</body>
+</html>

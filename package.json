@@ -1,0 +1,59 @@
+{
+  "name": "topbot",
+  "version": "0.0.1",
+  "description": "a bot for those who wanna boast of their arch linux in the telegram, but are too lazy to run neofetch",
+  "bin": "./start.sh",
+  "main": "index.js",
+  "homepage": "https://github.com/arebaka/topbot#readme",
+  "scripts": {
+    "test": ":",
+    "start": "node index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/arebaka/topbot/issues"
+  },
+  "author": "arelive <me@are.moe> (https://are.moe)",
+  "license": "MIT",
+  "repository": "github:arebaka/topbot",
+  "funding": {
+    "type": "patreon",
+    "url": "https://www.patreon.com/arelive"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+	"system",
+	"linux",
+	"arch",
+	"neofetch",
+	"top",
+	"monitor",
+	"htop",
+	"processes"
+  ],
+  "files": [
+    "LICENSE",
+    "README.md",
+    "config.toml",
+    "start.sh",
+    "index.js",
+    "config.js",
+    "logger.js",
+    "bot.js",
+    "commands/*",
+    "callbacks/*",
+    "handlers/*",
+    "middlewares/*",
+	"views/*"
+  ],
+  "dependencies": {
+    "@arelive/logger": "^1.1.1",
+    "human-readable": "^0.2.1",
+    "puppeteer": "^13.0.1",
+    "serverline": "^1.5.0",
+    "systeminformation": "^5.9.17",
+    "telegraf": "^4.4.1",
+    "toml": "^3.0.0",
+    "uuid": "^8.3.2"
+  }
+}
