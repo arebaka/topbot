@@ -12,6 +12,7 @@ module.exports = async ctx => {
 	const photo = await image();
 	fs.writeFileSync("./image.jpg", photo);
 	const mess = await ctx.tg.sendPhoto(config.adminId, { source: path.resolve("./image.jpg" )});
+	await ctx.tg.deleteMessage(config.adminId, mess.message_id);
 
 	try {
 		ctx.answerInlineQuery([{
