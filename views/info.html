@@ -16,7 +16,7 @@
 
 		#title {
 			padding: 0;
-			font: bold 24px/2 "Roboto Mono", monospace;
+			font: bold 24px/2 "JetBrains Mono", "Roboto Mono", monospace;
 			text-align: left;
 			color: #178EC8;
 			border-bottom: 1px solid #FCF4DC;
@@ -32,7 +32,7 @@
 			overflow: hidden;
 			display: block;
 			padding: 1em 0;
-			font: 12px/2 "Roboto Mono", monospace;
+			font: 12px/2 "JetBrains Mono", "Roboto Mono", monospace;
 			border-bottom: 1px solid;
 		}
 		.infoblock th {
@@ -161,6 +161,7 @@
 		{
 			for (let drive of drives) {
 				$("#drives").append(`<div class="drive">
+
 					<table><tbody><tr>
 						<th class="mount">${drive.mount}</th>
 						<td class="fs">${drive.type}</th>
@@ -294,7 +295,7 @@
 			</td>
 		</tr>
 	</tbody></table>
-	<div class="infoblock" id="cpu">
+	<section class="infoblock" id="cpu">
 		<div class="common">
 			<table><tbody><tr>
 				<th class="label">CPU</th>
@@ -305,8 +306,8 @@
 			<div class="bar"><div class="used"></div></div>
 		</div>
 		<div id="cores"></div>
-	</div>
-	<div class="infoblock" id="drives"></div>
+	</section>
+	<section class="infoblock" id="drives"></section>
 	<p id="time"><span class="time"></span></p>
 </body>
 </html>
