@@ -1,6 +1,6 @@
 [bot]
-token    = ""
-admin_id = 0
+token  = ""
+admins = []
 
 [params]
 

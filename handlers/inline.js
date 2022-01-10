@@ -7,12 +7,12 @@ const logger = require("../logger");
 const image  = require("../image");
 
 module.exports = async ctx => {
-	if (ctx.from.id != config.adminId) return;
-
 	const photo = await image();
-	fs.writeFileSync("./image.jpg", photo);
-	const mess = await ctx.tg.sendPhoto(config.adminId, { source: path.resolve("./image.jpg" )});
-	await ctx.tg.deleteMessage(config.adminId, mess.message_id);
+	fs.writeFileSync(path.resolve("../image.jpg"), photo);
+
+	const mess = await ctx.tg.sendPhoto(
+		config.admins[0], { source: path.resolve("../image.jpg" )});
+	ctx.tg.deleteMessage(config.admins[0], mess.message_id);
 
 	try {
 		ctx.answerInlineQuery([{

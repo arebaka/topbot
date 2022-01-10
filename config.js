@@ -8,9 +8,9 @@ const config = toml.parse(fs.readFileSync(path.resolve("config.toml")));
 
 
 module.exports = {
-	token:   process.env.TOKEN || config.bot.token,
-	adminId: process.env.ADMIN_ID || config.bot.admin_id,
-	params:  config.params,
+	token:  process.env.TOKEN || config.bot.token,
+	admins: process.env.ADMINS.split(/\s/g) || config.bot.admins,
+	params: config.params,
 
 	image: {
 		sample: config.image.sample,

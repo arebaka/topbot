@@ -19,11 +19,32 @@ module.exports = class Bot
 		this.username = null;
 		this.bot      = new Telegraf(this.token);
 
-	//	this.bot.start(commands.start);
+		this.bot.use((ctx, next) => {
+			if (!config.admins.find(id => id == ctx.from.id) && (
+				ctx.update.inline_query || (
+					ctx.message && ctx.message.text
+					&& ctx.message.text.startsWith('/')))
+			)
+				return logger.warn(
+					ctx.update.inline_query ? "inline" : ctx.message.text,
+					ctx.from.id);
 
-	//	for (let command of ["info", "tree", "bypid", "byuser", "bypri", "bynice", "bystate", "bycpu", "bymem", "bytime", "bycmd"]) {
-	//		this.bot.command(command, commands[command]);
-	//	}
+			logger.info(ctx.update.inline_query
+				? "inline" : ctx.message && ctx.message.text ? ctx.message.text : "~",
+				ctx.from.id);
+
+			return next();
+		});
+
+		this.bot.start(commands.start);
+
+		for (let command of [
+			"info", "tree", "bypid", "byuser",
+			"bypri", "bynice", "bystate",
+			"bycpu", "bymem", "bytime", "bycmd"
+		]) {
+			this.bot.command(command, commands[command]);
+		}
 
 		this.bot.on("inline_query", handlers.inline);
 	}
@@ -45,16 +66,13 @@ module.exports = class Bot
 	async stop()
 	{
 		logger.info(`Stop the bot @${this.username}`);
-
 		await this.bot.stop();
-
 		process.exit(0);
 	}
 
 	async reload()
 	{
 		logger.info(`Reload the bot @${this.username}`);
-
 		await this.bot.stop();
 		await this.start();
 	}
