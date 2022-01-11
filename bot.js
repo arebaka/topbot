@@ -20,13 +20,18 @@ module.exports = class Bot
 		this.bot      = new Telegraf(this.token);
 
 		this.bot.use((ctx, next) => {
-			if (ctx.chat.type == "private" && !config.admins.find(id => id == ctx.from.id))
+			if (!ctx.update.inline_query && !(
+				ctx.update.message && ctx.update.message.text)) return;
+
+			if ((ctx.update.inline_query || ctx.chat.type == "private")
+				&& !config.admins.find(id => id == ctx.from.id)
+			)
 				return logger.warn(
 					ctx.update.inline_query ? "inline" : ctx.message.text,
 					ctx.from.id);
 
-			logger.info(ctx.update.inline_query
-				? "inline" : ctx.message && ctx.message.text ? ctx.message.text : "~",
+			logger.info(
+				ctx.update.inline_query ? "inline" : ctx.message.text,
 				ctx.from.id);
 
 			return next();

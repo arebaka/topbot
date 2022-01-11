@@ -16,7 +16,7 @@ function formatUptime(msecs)
 
 	let res = days ? `${days},` : "";
 	res += hours ? `${hours}:`.padStart(3, '0') : res ? "00:" : "";
-	res += mins ? `${mins}:`.padStart(2, '0') : "00:";
+	res += mins ? `${mins}:`.padStart(3, '0') : "00:";
 	res += secs ? `${secs}`.padStart(2, '0') : "00";
 
 	return res;
@@ -24,18 +24,22 @@ function formatUptime(msecs)
 
 module.exports = async (ctx, comp) => {
 	let data = await processes();
+	data.sort(comp);
+	data.forEach(p => p.uptime = formatUptime(new Date() - new Date(p.started)));
+
 	let str;
-	let res  = printf("%7s %-10s %c %3s %4s %6s %6s %12s %s\n",
+	let pidLen    = Math.max.apply(null, data.map(p => p.pid.toString().length));
+	let uptimeLen = Math.max.apply(null, data.map(p => p.uptime.length));
+	let res       = printf(
+		`%${Math.max(pidLen, 3)}s %-10s %c %3s %4s %6s %6s %${Math.max(uptimeLen, 6)}s %s\n`,
 		"PID", "USER", "STATE"[0], "PRI", "NICE", "CPU%", "MEM%", "UPTIME", "COMMAND");
 
-	data.sort(comp);
-
 	for (let process of data) {
-		str = printf("%7s %-10s %c %3d %4d % 6.1f % 6.1f %12s %s\n",
-			process.pid, process.user, process.state[0],
+		str = printf(
+			`%${Math.max(pidLen, 3)}s %-10s %c %3d %4d % 6.1f % 6.1f %${Math.max(uptimeLen, 6)}s %s\n`,
+			process.pid, process.user.substr(0, 10), process.state[0],
 			process.priority, process.nice, process.cpu, process.mem,
-			formatUptime(new Date() - new Date(process.started)),
-			process.command);
+			process.uptime, process.command);
 
 		if (res.length + str.length > 4096) {
 			await ctx.replyWithHTML(`<pre>${res}</pre>`);

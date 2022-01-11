@@ -33,5 +33,9 @@ rl.on("SIGINT", rl => {
 			: rl.output.write("\x1b[1K> "));
 });
 
-process.on("uncaughtException", e => logger.error(e));
+process.on("uncaughtException", e => {
+	logger.error(e);
+	bot.reload();
+});
+
 bot.start();
