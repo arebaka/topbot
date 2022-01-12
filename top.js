@@ -3,6 +3,7 @@ const printf = require("printf");
 const config    = require("./config");
 const logger    = require("./logger");
 const processes = require("./processes");
+const states    = require("./states");
 
 function formatUptime(msecs)
 {
@@ -31,15 +32,15 @@ module.exports = async (ctx, comp) => {
 	let pidLen    = Math.max.apply(null, data.map(p => p.pid.toString().length));
 	let uptimeLen = Math.max.apply(null, data.map(p => p.uptime.length));
 	let res       = printf(
-		`%${Math.max(pidLen, 3)}s %-10s %c %3s %4s %6s %6s %${Math.max(uptimeLen, 6)}s %s\n`,
-		"PID", "USER", "STATE"[0], "PRI", "NICE", "CPU%", "MEM%", "UPTIME", "COMMAND");
+		`%${Math.max(pidLen, 3)}s %${Math.max(pidLen, 4)}s %-10s %c %3s %3s %6s %6s %${Math.max(uptimeLen, 6)}s %s\n`,
+		"PID", "PPID", "USER", "S", "PRI", "NI", "CPU%", "MEM%", "UPTIME", "COMMAND");
 
 	for (let process of data) {
 		str = printf(
-			`%${Math.max(pidLen, 3)}s %-10s %c %3d %4d % 6.1f % 6.1f %${Math.max(uptimeLen, 6)}s %s\n`,
-			process.pid, process.user.substr(0, 10), process.state[0],
-			process.priority, process.nice, process.cpu, process.mem,
-			process.uptime, process.command);
+			`%${Math.max(pidLen, 3)}s %${Math.max(pidLen, 4)}s %-10s %c %3d %3d % 6.1f % 6.1f %${Math.max(uptimeLen, 6)}s %s\n`,
+			process.pid, process.parentPid, process.user.substr(0, 10),
+			states[process.state], process.priority, process.nice,
+			process.cpu, process.mem, process.uptime, process.command);
 
 		if (res.length + str.length > 4096) {
 			await ctx.replyWithHTML(`<pre>${res}</pre>`);
@@ -52,5 +53,5 @@ module.exports = async (ctx, comp) => {
 	await ctx.replyWithHTML(`<pre>${res}</pre>`);
 
 	data.sort((p1, p2) => p1.pid > p2.pid ? 1 : -1);
-	ctx.replyWithMarkdown(data.map(p => printf("%8s", "/" + p.pid)).join(' '));
+	ctx.replyWithMarkdown(data.map(p => printf(`%-${pidLen + 1}s`, "/" + p.pid)).join(' '));
 };

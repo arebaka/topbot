@@ -1,4 +1,4 @@
-const Telegraf = require("telegraf").Telegraf;
+const { Telegraf, Composer } = require("telegraf");
 
 const config = require("./config");
 const logger = require("./logger");
@@ -19,23 +19,22 @@ module.exports = class Bot
 		this.username = null;
 		this.bot      = new Telegraf(this.token);
 
-		this.bot.use((ctx, next) => {
-			if (!ctx.update.inline_query && !(
-				ctx.update.message && ctx.update.message.text)) return;
+		this.bot.use(Composer.filter(
+			ctx => ctx.update.inline_query || (ctx.update.message && ctx.update.message.text)),
+			(ctx, next) => {
+				if ((ctx.update.inline_query || ctx.chat.type == "private")
+					&& !config.admins.find(id => id == ctx.from.id)
+				)
+					return logger.warn(
+						ctx.update.inline_query ? "inline" : ctx.message.text,
+						ctx.from.id);
 
-			if ((ctx.update.inline_query || ctx.chat.type == "private")
-				&& !config.admins.find(id => id == ctx.from.id)
-			)
-				return logger.warn(
+				logger.info(
 					ctx.update.inline_query ? "inline" : ctx.message.text,
 					ctx.from.id);
 
-			logger.info(
-				ctx.update.inline_query ? "inline" : ctx.message.text,
-				ctx.from.id);
-
-			return next();
-		});
+				return next();
+			});
 
 		this.bot.start(commands.start);
 
@@ -46,6 +45,8 @@ module.exports = class Bot
 		]) {
 			this.bot.command(command, commands[command]);
 		}
+
+		this.bot.hears(/^\/(\d+)$/, commands.pid);
 
 		this.bot.on("inline_query", handlers.inline);
 	}

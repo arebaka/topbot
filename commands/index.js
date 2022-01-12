@@ -10,5 +10,6 @@ module.exports = {
 	bycpu:   require("./bycpu"),
 	bymem:   require("./bymem"),
 	bytime:  require("./bytime"),
-	bycmd:   require("./bycmd")
+	bycmd:   require("./bycmd"),
+	pid:     require("./pid")
 };

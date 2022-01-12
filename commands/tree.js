@@ -3,6 +3,7 @@ const printf = require("printf");
 const config    = require("../config");
 const logger    = require("../logger");
 const processes = require("../processes");
+const states    = require("../states");
 
 class Node
 {
@@ -25,7 +26,7 @@ class Node
 
 		let res = printf(
 			format,
-			this.pid, this.user.substr(0, 10), this.state[0],
+			this.pid, this.user.substr(0, 10), states[this.state],
 			this.cpu, this.mem, prefix + this.command);
 
 		levels[depth] = true;
@@ -46,7 +47,7 @@ module.exports = async ctx => {
 	let pidLen = Math.max.apply(null, data.map(p => p.pid.toString().length));
 	let res    = printf(
 		`%${Math.max(pidLen, 3)}s %-10s %c %6s %6s %s\n`,
-		"PID", "USER", "STATE"[0], "CPU%", "MEM%", "COMMAND");
+		"PID", "USER", "S", "CPU%", "MEM%", "COMMAND");
 
 	data.sort((p1, p2) => p1.pid > p2.pid ? 1 : -1);
 	data = data.map(p => new Node(p));
@@ -64,5 +65,5 @@ module.exports = async ctx => {
 		res = res.substr(offset + 1, res.length);
 	}
 
-	ctx.replyWithMarkdown(data.map(p => printf("%8s", "/" + p.pid)).join(' '));
+	ctx.replyWithMarkdown(data.map(p => printf(`%-${pidLen + 1}s`, "/" + p.pid)).join(' '));
 };
