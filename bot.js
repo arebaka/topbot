@@ -8,9 +8,6 @@ const commands    = require("./commands");
 const handlers    = require("./handlers");
 const callbacks   = require("./callbacks");
 
-
-
-
 module.exports = class Bot
 {
 	constructor(token)
@@ -20,18 +17,22 @@ module.exports = class Bot
 		this.bot      = new Telegraf(this.token);
 
 		this.bot.use(Composer.filter(
-			ctx => ctx.update.inline_query || (ctx.update.message && ctx.update.message.text)),
+			ctx => ctx.update.inline_query
+				|| ctx.update.callback_query
+				|| (ctx.message && ctx.message.text)),
 			(ctx, next) => {
-				if ((ctx.update.inline_query || ctx.chat.type == "private")
-					&& !config.admins.find(id => id == ctx.from.id)
-				)
-					return logger.warn(
-						ctx.update.inline_query ? "inline" : ctx.message.text,
-						ctx.from.id);
+				let log = (ctx.update.inline_query && "inline")
+					|| (ctx.update.callback_query && `callback: "${ctx.update.callback_query.data}"`)
+					|| (ctx.message && ctx.message.text && `"${ctx.message.text}"`);
 
-				logger.info(
-					ctx.update.inline_query ? "inline" : ctx.message.text,
-					ctx.from.id);
+				if ((ctx.update.inline_query
+						|| ctx.update.callback_query
+						|| ctx.chat.type == "private"
+					) && !config.bot.admins.find(id => id == ctx.from.id)
+				)
+					return logger.warn(log);
+
+				logger.info(log);
 
 				return next();
 			});
@@ -49,12 +50,23 @@ module.exports = class Bot
 		this.bot.hears(/^\/(\d+)$/, commands.pid);
 
 		this.bot.on("inline_query", handlers.inline);
+
+		this.bot.action(/^status:(\d+)$/, callbacks.status);
+
+		this.bot.action(/^files:(\d+)$/,  callbacks.files);
+		this.bot.action(/^env:(\d+)$/,    callbacks.env);
+		this.bot.action(/^io:(\d+)$/,     callbacks.io);
+		this.bot.action(/^limits:(\d+)$/, callbacks.limits);
+
+		this.bot.action(/^kill:(\d+)$/,      callbacks.kill);
+		this.bot.action(/^termitane:(\d+)$/, callbacks.terminate);
+		this.bot.action(/^signal:(\d+)$/,    callbacks.signal);
 	}
 
 	async start()
 	{
 		this.bot
-			.launch(config.params)
+			.launch(config.bot.params)
 			.then(res => {
 				this.username = this.bot.botInfo.username;
 				logger.info(`Bot @${this.username} started.`);

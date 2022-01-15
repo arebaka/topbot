@@ -1,9 +1,15 @@
 [bot]
 token  = ""
 admins = []
-
-[params]
+params = {}
 
 [image]
 sample = "info.html"
 select = "#container"
+
+[process]
+management = [
+	"kill",
+	"termitane",
+	"signal"
+]

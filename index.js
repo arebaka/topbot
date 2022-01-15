@@ -7,7 +7,7 @@ const logger = require("./logger");
 process.stdin.setEncoding("utf8");
 process.stderr.setEncoding("utf8");
 
-const bot = new Bot(config.token);
+const bot = new Bot(config.bot.token);
 
 rl.init();
 rl.setCompletion(["stop", "reload"]);

@@ -4,13 +4,16 @@ const toml = require("toml");
 
 const config = toml.parse(fs.readFileSync(path.resolve("config.toml")));
 
-
-
-
 module.exports = {
-	token:  process.env.TOKEN || config.bot.token,
-	admins: process.env.ADMINS.split(/\s/g) || config.bot.admins,
-	params: config.params,
+	bot: {
+		token:  process.env.TOKEN || config.bot.token,
+		admins: process.env.ADMINS.split(/\s/g) || config.bot.admins,
+		params: config.bot.params
+	},
+
+	process: {
+		management: config.process.management || []
+	},
 
 	image: {
 		sample: config.image.sample,

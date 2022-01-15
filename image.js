@@ -22,7 +22,6 @@ module.exports = async () => {
 	await page.exposeFunction("formatSize", sizeFormatter({ std: "IEC" }));
 
 	await page.evaluate(data => render(data), data);
-
 	const container = await page.$(config.image.select);
 
 	return await container.screenshot({ type: "jpeg", quality: 100 });
