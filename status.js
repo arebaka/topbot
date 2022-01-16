@@ -53,8 +53,14 @@ ${process.tty ? "<code>on </code>" + process.tty + "\n" : ""}`;
 
 	let markup = [["files", "env", "io", "limits"]
 		.map(a => Markup.button.callback(a, `${a}:${process.pid}`))];
-	config.process.management.length && markup.push(config.process.management
-		.map(a => Markup.button.callback(a, `${a}:${process.pid}`)));
+
+	if (config.process.signals.length) {
+		let buttons = [Markup.button.callback("signal", `signal:${process.pid}`)];
+		config.process.signals.find(s => s == "SIGTERM") && buttons.unshift(
+			Markup.button.callback("kill", `kill:SIGTERM:${process.pid}`));
+		markup.push(buttons);
+	}
+
 	markup = Markup.inlineKeyboard(markup);
 
 	return [text, markup, { parse_mode: "HTML" }];

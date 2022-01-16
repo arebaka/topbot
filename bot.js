@@ -61,6 +61,8 @@ module.exports = class Bot
 		this.bot.action(/^kill:(\d+)$/,      callbacks.kill);
 		this.bot.action(/^termitane:(\d+)$/, callbacks.terminate);
 		this.bot.action(/^signal:(\d+)$/,    callbacks.signal);
+
+		this.bot.action(/^kill:([^:]+):(\d+)$/, callbacks.kill);
 	}
 
 	async start()

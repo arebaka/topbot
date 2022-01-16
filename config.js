@@ -12,7 +12,7 @@ module.exports = {
 	},
 
 	process: {
-		management: config.process.management || []
+		signals: config.process.signals || []
 	},
 
 	image: {

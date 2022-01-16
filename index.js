@@ -27,11 +27,14 @@ rl.on("line", async line => {
 });
 
 rl.on("SIGINT", rl => {
-	rl.question("Confirm exit: ", async answer =>
+	rl.question("Confirm exit: ", answer =>
 		answer.match(/^y(es)?$/i)
-			? await bot.stop()
+			? bot.stop()
 			: rl.output.write("\x1b[1K> "));
 });
+
+process.on("SIGINT",  bot.stop);
+process.on("SIGTERM", bot.stop);
 
 process.on("uncaughtException", e => {
 	logger.error(e);
