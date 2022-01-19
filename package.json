@@ -1,7 +1,7 @@
 {
   "name": "topbot",
-  "version": "1.0.0",
-  "description": "a bot for those who wanna boast of their arch linux in the telegram, but are too lazy to run neofetch",
+  "version": "1.0.1",
+  "description": "a Telegram bot for those who wanna boast of their arch linux in the telegram, but are too lazy to run neofetch",
   "bin": "./start.sh",
   "main": "index.js",
   "homepage": "https://github.com/arebaka/topbot#readme",
