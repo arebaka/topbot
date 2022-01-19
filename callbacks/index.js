@@ -5,6 +5,5 @@ module.exports = {
 	io:        require("./io"),
 	limits:    require("./limits"),
 	kill:      require("./kill"),
-	terminate: require("./terminate"),
 	signal:    require("./signal")
 };

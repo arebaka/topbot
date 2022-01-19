@@ -10,7 +10,8 @@ module.exports = async ctx => {
 		let markup = Markup.inlineKeyboard(
 			[[Markup.button.callback("<<", `status:${pid}`)]]);
 
-		await ctx.editMessageText(res, markup);
+		await ctx.editMessageText(res,
+			{ reply_markup: markup.reply_markup, parse_mode: "HTML" });
 	}
 	catch (err) {
 		ctx.answerCbQuery("Forbidden!", true);

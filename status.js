@@ -49,7 +49,7 @@ ${process.tty ? "<code>on </code>" + process.tty + "\n" : ""}`;
 	catch (err) {}
 
 	if (process.user != os.userInfo().username)
-		return [text, { parse_mode: "HTML" }];
+		return { text, extra: { parse_mode: "HTML" } };
 
 	let markup = [["files", "env", "io", "limits"]
 		.map(a => Markup.button.callback(a, `${a}:${process.pid}`))];
@@ -63,5 +63,6 @@ ${process.tty ? "<code>on </code>" + process.tty + "\n" : ""}`;
 
 	markup = Markup.inlineKeyboard(markup);
 
-	return [text, markup, { parse_mode: "HTML" }];
+	return { text, extra: {
+		reply_markup: markup.reply_markup, parse_mode: "HTML" } };
 };

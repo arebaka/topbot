@@ -19,12 +19,15 @@ module.exports = async ctx => {
 			data.push({ fd, path, info });
 		}
 
-		let res = data.map(f => `${f.fd}: ${f.path}\n${f.info}`).join('\n');
+		let res = data
+			.map(f => `<b>${f.fd}</b>: <u>${f.path}</u>\n${f.info}`)
+			.join('\n');
 
 		let markup = Markup.inlineKeyboard(
 			[[Markup.button.callback("<<", `status:${pid}`)]]);
 
-		await ctx.editMessageText(res, markup);
+		await ctx.editMessageText(res,
+			{ reply_markup: markup.reply_markup, parse_mode: "HTML" });
 	}
 	catch (err) {console.log(err)
 		ctx.answerCbQuery("Forbidden!", true);
