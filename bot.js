@@ -52,15 +52,12 @@ module.exports = class Bot
 		this.bot.on("inline_query", handlers.inline);
 
 		this.bot.action(/^status:(\d+)$/, callbacks.status);
+		this.bot.action(/^signal:(\d+)$/, callbacks.signal);
 
 		this.bot.action(/^files:(\d+)$/,  callbacks.files);
 		this.bot.action(/^env:(\d+)$/,    callbacks.env);
 		this.bot.action(/^io:(\d+)$/,     callbacks.io);
 		this.bot.action(/^limits:(\d+)$/, callbacks.limits);
-
-		this.bot.action(/^kill:(\d+)$/,      callbacks.kill);
-		this.bot.action(/^termitane:(\d+)$/, callbacks.terminate);
-		this.bot.action(/^signal:(\d+)$/,    callbacks.signal);
 
 		this.bot.action(/^kill:([^:]+):(\d+)$/, callbacks.kill);
 	}

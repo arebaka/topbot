@@ -25,8 +25,13 @@ function formatUptime(msecs)
 
 module.exports = async (ctx, comp) => {
 	let data = await processes();
+	let query = ctx.message.text.trim().split(/\s+/g).slice(1).join(' ');
+
+	data = query ? data.filter(p => p.command.includes(query)) : data;
 	data.sort(comp);
 	data.forEach(p => p.uptime = formatUptime(new Date() - new Date(p.started)));
+
+	if (!data.length) return ctx.replyWithMarkdown("No any process!");
 
 	let str;
 	let pidLen    = Math.max.apply(null, data.map(p => p.pid.toString().length));
