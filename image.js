@@ -7,25 +7,21 @@ const { durationFormatter, sizeFormatter } = require("human-readable");
 
 const config = require("./config");
 
-let browser;
-let page;
-
-async function prepare()
-{
-	browser = await puppeteer.launch();
-	page    = await browser.newPage();
+const promise = (async () => {
+	const browser = await puppeteer.launch();
+	const page    = await browser.newPage();
 
 	await page.exposeFunction("formatDur", durationFormatter());
 	await page.exposeFunction("formatSize", sizeFormatter({ std: "IEC" }));
-}
 
-const promise = prepare();
+	return page;
+})();
 
 module.exports = async () => {
-	await promise;
-	await page.goto(`file://${path.resolve("./views/" + config.image.sample)}`);
+	const page = await promise;
+	let   data = {};
 
-	let data = {};
+	await page.goto(`file://${path.resolve("./views/" + config.image.sample)}`);
 
 	data.user    = os.userInfo();
 	data.loadavg = os.loadavg();
