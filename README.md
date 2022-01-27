@@ -1,7 +1,7 @@
 # topbot
 *Why are you installing Arch Linux when you can just edit source of the neofetch?*
 
-> A [Telegram](https://telegram.org) bot for those who wanna boast of their arch linux in the telegram, but are too lazy to run neofetch.
+> A bot for those who wanna boast of their Arch Linux in the [Telegram](https://telegram.org), but are too lazy to run neofetch.
 
 ![](https://img.shields.io/tokei/lines/github/arebaka/topbot)
 ![](https://img.shields.io/github/repo-size/arebaka/topbot)
@@ -11,8 +11,8 @@
 ![](https://img.shields.io/badge/English-100%25-brightgreen)
 
 ## Commands
-`/info` – get a dashboard with common stat of the system  
-`/tree` – get running processes in the tree view (parents & children)  
+`/info` – get a dashboard with general stat of the system  
+`/tree` – get running processes in tree view (parents & children)  
 `/bypid [filter]` – get a list of running processes sorted by their PID  
 `/byuser [filter]` – get a list of running processes sorted by their user  
 `/bypri [filter]` – get a list of running processes sorted by their priority  
@@ -22,7 +22,7 @@
 `/bymem [filter]` – get a list of running processes sorted by their memory usage  
 `/bytime [filter]` – get a list of running processes sorted by their uptime  
 `/bycmd [filter]` – get a list of running processes sorted by their command  
-`/<PID>` – get a stat of the process with PID
+`/<PID>` – get stat of the process with PID
 
 ## Usage
 1. Create and setup a bot via [@BotFather](https://t.me/BotFather)
@@ -32,12 +32,12 @@
 5. `export ADMINS='<IDS OF USERS WHO CAN USE THE BOT SEPARATED BY SPACE>'`
 6. `npx topbot`
 7. Now the `$ADMINS` can use the bot everywhere (commands, inline, buttons)
-8. To stop the bot type to console with it `stop` and press enter
+8. To stop the bot, type `stop` to console with it and press enter
 
-**WARNING!** Start your bot first in PM to use the inline!
+**WARNING!** Start your bot in PM before using the inline!
 
 ## Settings
-The file `config.toml` contains:
+A file `config.toml` contains:
 
 `[bot]` – parameters for the launch of the bot that could be used instead the variables of environment  
 `[image]` – a filename from `./views` with a page and a selector of an element on it to render the general dashboard  
