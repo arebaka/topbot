@@ -42,7 +42,6 @@ class Node
 }
 
 module.exports = async ctx => {
-	let str;
 	let data   = await processes();
 	let pidLen = Math.max.apply(null, data.map(p => p.pid.toString().length));
 	let res    = printf(
@@ -57,9 +56,8 @@ module.exports = async ctx => {
 
 	res += data[0].show(0, [], `%${Math.max(pidLen, 3)}s %-10s %c % 6.1f % 6.1f %s\n`);
 
-	let offset;
 	while(res.length) {
-		offset = res.substr(0, 4096).lastIndexOf('\n');
+		let offset = res.substr(0, 4096).lastIndexOf('\n');
 		offset = offset < 0 ? res.length : offset;
 		await ctx.replyWithHTML(`<pre>${res.substr(0, offset)}</pre>`);
 		res = res.substr(offset + 1, res.length);

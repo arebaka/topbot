@@ -47,7 +47,7 @@ module.exports = class Bot
 			this.bot.command(command, commands[command]);
 		}
 
-		this.bot.hears(/^\/(\d+)$/, commands.pid);
+		this.bot.hears(/^\/(\d+)(@[_a-zA-Z0-9]+)?$/, commands.pid);
 
 		this.bot.on("inline_query", handlers.inline);
 

@@ -1,5 +1,5 @@
-let fs     = require("fs");
-let Markup = require("telegraf").Markup;
+const fs     = require("fs");
+const Markup = require("telegraf").Markup;
 
 module.exports = async ctx => {
 	let pid = ctx.match[1];

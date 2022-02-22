@@ -24,8 +24,8 @@ function formatUptime(msecs)
 }
 
 module.exports = async (ctx, comp) => {
-	let data = await processes();
-	let query = ctx.message.text.trim().split(/\s+/g).slice(1).join(' ');
+	let   data  = await processes();
+	const query = ctx.message.text.trim().split(/\s+/g).slice(1).join(' ');
 
 	data = query ? data.filter(p => p.command.includes(query)) : data;
 	data.sort(comp);
@@ -33,7 +33,6 @@ module.exports = async (ctx, comp) => {
 
 	if (!data.length) return ctx.replyWithMarkdown("No any process!");
 
-	let str;
 	let pidLen    = Math.max.apply(null, data.map(p => p.pid.toString().length));
 	let uptimeLen = Math.max.apply(null, data.map(p => p.uptime.length));
 	let res       = printf(
@@ -41,7 +40,7 @@ module.exports = async (ctx, comp) => {
 		"PID", "PPID", "USER", "S", "PRI", "NI", "CPU%", "MEM%", "UPTIME", "COMMAND");
 
 	for (let process of data) {
-		str = printf(
+		const str = printf(
 			`%${Math.max(pidLen, 3)}s %${Math.max(pidLen, 4)}s %-10s %c %3d %3d % 6.1f % 6.1f %${Math.max(uptimeLen, 6)}s %s\n`,
 			process.pid, process.parentPid, process.user.substr(0, 10),
 			states[process.state], process.priority, process.nice,
