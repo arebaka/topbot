@@ -1,6 +1,6 @@
 {
   "name": "topbot",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "a Telegram bot for those who wanna boast of their arch linux in the telegram, but are too lazy to run neofetch",
   "bin": "./start.sh",
   "main": "index.js",

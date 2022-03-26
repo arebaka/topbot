@@ -8,10 +8,10 @@ const image  = require("../image");
 
 module.exports = async ctx => {
 	const photo = await image();
-	fs.writeFileSync(path.resolve("../image.jpg"), photo);
+	fs.writeFileSync(path.resolve("image.jpg"), photo);
 
 	const mess = await ctx.tg.sendPhoto(
-		config.bot.admins[0], { source: path.resolve("../image.jpg" )});
+		config.bot.admins[0], { source: path.resolve("image.jpg" )});
 	ctx.tg.deleteMessage(config.bot.admins[0], mess.message_id);
 
 	try {
