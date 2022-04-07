@@ -1,4 +1,5 @@
-const { Telegraf, Composer } = require("telegraf");
+const Telegraf = require("telegraf").Telegraf;
+const Composer = require("telegraf").Composer;
 
 const config = require("./config");
 const logger = require("./logger");
@@ -7,6 +8,7 @@ const middlewares = require("./middlewares");
 const commands    = require("./commands");
 const handlers    = require("./handlers");
 const callbacks   = require("./callbacks");
+const filters     = require("./filters");
 
 module.exports = class Bot
 {
@@ -19,37 +21,54 @@ module.exports = class Bot
 		this.bot.use(Composer.filter(
 			ctx => ctx.update.inline_query
 				|| ctx.update.callback_query
-				|| (ctx.message && ctx.message.text)),
-			(ctx, next) => {
-				let log = (ctx.update.inline_query && "inline")
-					|| (ctx.update.callback_query && `callback: "${ctx.update.callback_query.data}"`)
-					|| (ctx.message && ctx.message.text && `"${ctx.message.text}"`);
+				|| (ctx.message && ctx.message.text)
+		));
 
-				if ((ctx.update.inline_query
-						|| ctx.update.callback_query
-						|| ctx.chat.type == "private"
-					) && !config.bot.admins.find(id => id == ctx.from.id)
-				)
-					return logger.warn(log);
-
-				logger.info(log);
-
-				return next();
-			});
-
-		this.bot.start(commands.start);
+		this.bot.start(
+			middlewares.command,
+			filters.admin,
+			middlewares.log,
+			commands.start
+		);
 
 		for (let command of [
 			"info", "tree", "bypid", "byuser",
 			"bypri", "bynice", "bystate",
 			"bycpu", "bymem", "bytime", "bycmd"
 		]) {
-			this.bot.command(command, commands[command]);
+			this.bot.command(command,
+				middlewares.command,
+				filters.admin,
+				middlewares.log, 
+				commands[command]
+			);
 		}
 
-		this.bot.hears(/^\/(\d+)(@[_a-zA-Z0-9]+)?$/, commands.pid);
+		this.bot.hears(/^\/(\d+)(@[_a-zA-Z0-9]+)?$/,
+			middlewares.command,
+			filters.admin,
+			middlewares.log,
+			commands.pid
+		);
 
-		this.bot.on("inline_query", handlers.inline);
+		this.bot.on("inline_query",
+			(ctx, next) => {
+				ctx.state.log = "inline";
+				next();
+			},
+			filters.admin,
+			middlewares.log,
+			handlers.inline
+		);
+
+		this.bot.on("callback_query",
+			(ctx, next) => {
+				ctx.state.log = `callback: "${ctx.update.callback_query.data}"`;
+				next();
+			},
+			filters.admin,
+			middlewares.log
+		);
 
 		this.bot.action(/^status:(\d+)$/, callbacks.status);
 		this.bot.action(/^signal:(\d+)$/, callbacks.signal);

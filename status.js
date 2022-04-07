@@ -52,7 +52,7 @@ ${process.tty ? "<code>on </code>" + process.tty + "\n" : ""}`;
 
 	if (config.process.signals.length) {
 		let buttons = [Markup.button.callback("signal", `signal:${process.pid}`)];
-		config.process.signals.find(s => s == "SIGTERM") && buttons.unshift(
+		config.process.signals.includes("SIGTERM") && buttons.unshift(
 			Markup.button.callback("kill", `kill:SIGTERM:${process.pid}`));
 		markup.push(buttons);
 	}

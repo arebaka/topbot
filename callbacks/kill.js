@@ -7,7 +7,8 @@ module.exports = async ctx => {
 	const pid    = ctx.match[2];
 
 	try {
-		if (!config.process.signals.find(a => a == signal)) throw 1;
+		if (!config.process.signals.includes(signal))
+			throw 1;
 		process.kill(pid, signal);
 
 		await status(ctx);

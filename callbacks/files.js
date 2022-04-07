@@ -29,7 +29,7 @@ module.exports = async ctx => {
 		await ctx.editMessageText(res,
 			{ reply_markup: markup.reply_markup, parse_mode: "HTML" });
 	}
-	catch (err) {console.log(err)
+	catch (err) {
 		ctx.answerCbQuery("Forbidden!", true);
 	}
 };
